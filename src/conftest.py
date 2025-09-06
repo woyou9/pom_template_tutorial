@@ -49,7 +49,8 @@ def browser_context(browser, request): # fixture dla contextu przeglądarki, prz
     yield context # zwraca context i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
 
     if request.node.rep_call.failed: # zapisujemy trace tylko kiedy test będzie negatywny
-        context.tracing.stop(path=f'./artifacts/tracing/trace_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.zip')
+        context.tracing.stop(
+            path=f'./artifacts/tracing/{request.node.name}_trace_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.zip')
     else:
         context.tracing.stop()
 

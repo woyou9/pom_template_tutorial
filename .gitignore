@@ -5,3 +5,5 @@
 /src/artifacts/report.html
 /src/artifacts/playwright_tests.log
 /src/artifacts/bdd_report/bdd_report.html
+/src/artifacts/tracing/*.zip
+
