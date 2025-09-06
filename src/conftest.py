@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from playwright.sync_api import sync_playwright, Page
 from pages.page_objects.home_page import HomePage
@@ -37,9 +39,20 @@ def browser(browser_type): # fixture dla przeglądarki, fixture browser_type zwr
 
 
 @pytest.fixture
-def browser_context(browser): # fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
+def browser_context(browser, request): # fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
     context = browser.new_context(no_viewport=True)
+    context.tracing.start( # tracing pozwala na podgląd przebiegu całego testu ze szczegółami w przeglądarce (playwright show-trace path/to/trace.zip)
+        screenshots=True,
+        snapshots=True,
+        sources=True
+    )
     yield context # zwraca context i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
+
+    if request.node.rep_call.failed: # zapisujemy trace tylko kiedy test będzie negatywny
+        context.tracing.stop(path=f'./artifacts/tracing/trace_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.zip')
+    else:
+        context.tracing.stop()
+
     context.close()
 
 

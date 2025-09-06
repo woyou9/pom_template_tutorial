@@ -3,7 +3,8 @@ Feature: Login
   Scenario: Signing in with correct data
     Given User on login page
     When I enter correct login and password and click "Login"
-    Then I see "You logged into a secure area!" text
+    Then I see "Secure Area page for Automation Testing Practice" text
+    And "Logout" button is visible
 
   Scenario: Signing in with incorrect password
     Given User on login page

@@ -26,3 +26,6 @@ class LoginPage:
         self.password_input_field.clear()
         self.password_input_field.fill(password)
         self.login_button.click()
+
+    def accept_cookies(self) -> None:
+        self.page.get_by_role('button', name='Consent').click()
