@@ -13,7 +13,17 @@ def pytest_addoption(parser):
         default='chrome',
         choices=['chrome', 'firefox', 'webkit', 'edge'],
         help='Select browser to run tests in.'
-    ) # dodanie opcji do pytest (takiej jak np. -s -v -m itp.)
+    ), # dodanie opcji do pytest (takiej jak np. -s -v -m itp.) - w tym wypadku wybór przeglądarki np. --test-browser firefox
+    parser.addoption(
+        '--headless',
+        action='store_true',
+        help='Add to run in headless mode (no GUI)'
+    ) # dodanie --headless spowoduje, że test nie będzie widoczny
+
+
+@pytest.fixture(scope='session')
+def is_headless(request) -> bool:
+    return request.config.getoption('--headless')
 
 
 @pytest.fixture(scope='session')
@@ -22,17 +32,17 @@ def browser_type(request) -> str:
 
 
 @pytest.fixture
-def browser(browser_type): # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
+def browser(browser_type, is_headless): # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
     with sync_playwright() as playwright:
         match browser_type:
             case 'chrome':
-                browser = playwright.chromium.launch(headless=False, args=['--start-maximized'])
+                browser = playwright.chromium.launch(headless=is_headless, args=['--start-maximized'])
             case 'firefox':
-                browser = playwright.firefox.launch(headless=False, args=['--kiosk'])
+                browser = playwright.firefox.launch(headless=is_headless, args=['--kiosk'])
             case 'webkit':
-                browser = playwright.webkit.launch(headless=False)
+                browser = playwright.webkit.launch(headless=is_headless)
             case 'edge':
-                browser = playwright.chromium.launch(headless=False, channel='msedge', args=['--start-maximized'])
+                browser = playwright.chromium.launch(headless=is_headless, channel='msedge', args=['--start-maximized'])
         yield browser # zwraca przeglądarkę i zatrzymuje wykonywanie funkcji, po teście wróci tutaj ją zamknać
         browser.close()
 

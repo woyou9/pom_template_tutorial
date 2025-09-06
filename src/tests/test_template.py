@@ -7,11 +7,12 @@ from pages.page_objects.login_page import LoginPage
 
 
 # Wybierz przeglądarkę jako argument
-# pytest --browser-type=chrome/firefox/webkit/edge (domyślnie chrome)
+# pytest --test-browser chrome/firefox/webkit/edge (domyślnie chrome)
 # pytest -włączy wszystkie testy
 # pytest -k 'example' -włączy testy z keywordem 'example' w nazwie
 # pytest folder z testami\plik z testami::nazwa funkcji testowej -włączy tylko konkretny test
     # np. pytest tests\test_template::test_01
+# pytest --headless -uruchomi test w trybie headless (nie będą widoczne)
 
 
 def test_01(page: Page) -> None:
