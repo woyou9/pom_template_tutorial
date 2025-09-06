@@ -23,12 +23,13 @@ def user_on_login_page(login_page: LoginPage):
 @when('I enter correct login and password and click "Login"')
 def enter_credentials_and_submit(login_page: LoginPage):
     login_page.accept_cookies()
-    login_page.sign_in(username='practice',
-                       password='SuperSecretPassword!')
+    with login_page.page.expect_response('https://practice.expandtesting.com/secure') as resp:
+        login_page.sign_in(username='practice',
+                           password='SuperSecretPassword!')
+    assert resp.value.status == 200
 
 @then(parsers.parse('I see "{text}" text'))
 def assert_message(login_page: LoginPage, text: str):
-    print(text)
     expect(login_page.page.get_by_text(text)).to_be_visible()
 
 @then('"Logout" button is visible')

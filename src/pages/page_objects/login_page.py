@@ -1,7 +1,8 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
 from pages.locators.login_page_locators import (LoginPageLocators,
                                                 LoginPageRoleLocators,
                                                 LoginPageTextLocators)
+from utils.logger import logger
 
 
 class LoginPage:
@@ -17,7 +18,7 @@ class LoginPage:
         self.register_button = self.page.get_by_text(text='Register')
         self.reset_password_button = self.page.get_by_role(role='button').filter(has_text='Reset')
         self.invalid_email_message = self.page.get_by_text(LoginPageTextLocators.INVALID_EMAIL_MESSAGE)
-        self.page.goto(self.login_page_url) # utworzenie instancji klasy LoginPage spowoduje przejście do url strony logowania
+        self.page.goto(self.login_page_url, wait_until='load') # utworzenie instancji klasy LoginPage spowoduje przejście do url strony logowania
 
         # Przykładowa metoda klasy LoginPage odpowiedzialna za logowanie
     def sign_in(self, username: str, password: str) -> None:
@@ -27,5 +28,9 @@ class LoginPage:
         self.password_input_field.fill(password)
         self.login_button.click()
 
+
     def accept_cookies(self) -> None:
-        self.page.get_by_role('button', name='Consent').click()
+        try:
+            self.page.get_by_role('button', name='Consent').click(timeout=5000)
+        except PlaywrightTimeoutError:
+            logger.info('Did not accept cookies popup')

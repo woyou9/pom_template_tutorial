@@ -110,3 +110,16 @@ def test_08(page: Page) -> None:
     for number in get_column_number(col_names):
         for td in page.locator(f'#table1 tr td:nth-of-type({number})').all():
             logger.info(td.text_content()) # text wszystkich komórek dla kolumn z listy col_names
+
+
+def test_09(login_page: LoginPage) -> None:
+    login_page.accept_cookies()
+    with login_page.page.expect_response('https://practice.expandtesting.com/secure') as response_info: # ustawia context managera - poczekaj na response z tego URL
+        login_page.sign_in(username='practice',
+                           password='SuperSecretPassword!') # w środku context managera akcje wywołujące response
+
+    # response_info.value daje dostęp do konkretnych informacji tego response'a
+    logger.info(response_info.value.status)
+    logger.info(response_info.value.status_text)
+    logger.info(response_info.value.request)
+

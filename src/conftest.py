@@ -1,5 +1,4 @@
 import datetime
-
 import pytest
 from playwright.sync_api import sync_playwright, Page
 from pages.page_objects.home_page import HomePage
@@ -68,7 +67,6 @@ def page(browser_context): # fixture dla strony, przyjmuje context jako argument
 
 # W argumencie funkcji testowej trzeba podać login_page, wtedy zostanie utworzona nowa instancja klasy LoginPage
 # na potrzeby tego testu. Nie trzeba będzie tego robić manualnie w teście.
-
 @pytest.fixture
 def login_page(page) -> LoginPage:
     return LoginPage(page)
