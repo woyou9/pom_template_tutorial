@@ -23,7 +23,7 @@ def user_on_login_page(login_page: LoginPage):
 @when('I enter correct login and password and click "Login"')
 def enter_credentials_and_submit(login_page: LoginPage):
     login_page.accept_cookies()
-    login_page.sign_in(username='practicee',
+    login_page.sign_in(username='practice',
                        password='SuperSecretPassword!')
 
 @then(parsers.parse('I see "{text}" text'))

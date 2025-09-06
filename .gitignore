@@ -4,6 +4,7 @@
 /src/.cucumber-data.json
 /src/artifacts/report.html
 /src/artifacts/playwright_tests.log
-/src/artifacts/bdd_report/bdd_report.html
+/src/artifacts/bdd_report/*.html
 /src/artifacts/tracing/*.zip
-
+/src/artifacts/html_report/assets/
+/src/artifacts/html_report/*.html
