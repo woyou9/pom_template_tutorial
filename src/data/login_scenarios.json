@@ -1,0 +1,19 @@
+{
+  "login_scenarios": [
+    {
+      "username": "practice",
+      "password": "SuperSecretPassword!",
+      "test_case_name": "valid_login"
+    },
+    {
+      "username": "lmao",
+      "password": "SuperSecretPassword!",
+      "test_case_name": "invalid_username"
+    },
+    {
+      "username": "practice",
+      "password": "!QAZxsw2",
+      "test_case_name": "invalid_password"
+    }
+  ]
+}

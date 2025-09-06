@@ -1,0 +1,7 @@
+/.idea/
+/.venv/
+/src/artifacts/assets/
+/src/.cucumber-data.json
+/src/artifacts/report.html
+/src/artifacts/playwright_tests.log
+/src/artifacts/bdd_report/bdd_report.html

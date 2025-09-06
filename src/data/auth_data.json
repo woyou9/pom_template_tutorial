@@ -1,0 +1,10 @@
+{
+  "standard_user": {
+    "username": "practice",
+    "password": "SuperSecretPassword!"
+  },
+  "admin": {
+    "username": "",
+    "password": ""
+  }
+}
