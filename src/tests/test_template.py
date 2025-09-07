@@ -15,6 +15,13 @@ from pages.page_objects.login_page import LoginPage
 # pytest --headless -uruchomi test w trybie headless (nie będą widoczne)
 
 
+# ten test się nie wykona z uwagi na nieprawidłową nazwę funkcji
+# nazwa funkcji testowej musi zaczynać się od słowa "test"
+# nie dotyczy nazw plików - plik z funkcjami testowymi może mieć nazwę abc.py, dopóki nazwy funkcji testowych są prawidłowe testy się wykonają
+def est_00(page: Page) -> None:
+    page.goto('https://google.com')
+
+
 def test_01(page: Page) -> None:
     page.goto(url='https:\\google.com', wait_until='load')
     page.get_by_role(role='button', name='Odrzuć wszystko').click()
@@ -37,7 +44,7 @@ def test_02(page, browser_type) -> None:
 
 
 def test_03(login_page: LoginPage, home_page: HomePage) -> None: # wykorzystanie login_page/home_page fixture żeby utworzyć instancje klasy na potrzeby testu
-    login_page.sign_in(username='practice',
+    login_page.sign_in(username='practice',                      # opis w src/conftest -> def login_page()
                        password='SuperSecretPassword!') # wykorzystanie metody klasy LoginPage
 
     expect(home_page.page.get_by_text(text='You logged into a secure area!', exact=True)).to_be_visible() # asercja - element z dokładnym tekstem ma być widoczny

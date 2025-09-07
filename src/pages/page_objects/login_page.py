@@ -6,7 +6,7 @@ from utils.logger import logger
 
 
 class LoginPage:
-    login_page_url = 'https://practice.expandtesting.com/login'
+    login_page_url = 'https://practice.expandtesting.com/login' # pole klasy, nie instancji klasy - wspólne dla wszystkich obiektów klasy LoginPage
     
     def __init__(self, page: Page):
         self.page = page # rozszerzenie funkcjonalności page'a klasy o metody playwrightowego page (np. .goto(), .click(), .fill() itd.)

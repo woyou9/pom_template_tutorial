@@ -24,11 +24,12 @@ def test_login_03() -> None:
 @given('User on login page')
 def user_on_login_page(login_page: LoginPage) -> None:
     pass # krok pusty, bo przejście na strone logowania jest w konstruktorze LoginPage - samo utworzenie obiektu przez fixture przejdzie na stronę logowania
+    # bez tego tutaj znajdowałoby się coś w stylu login_page.navigate_to_login_page()
 
 @when('I enter correct login and password and click "Login"')
 def enter_credentials_and_submit(login_page: LoginPage, shared_data: dict) -> None:
     login_page.accept_cookies()
-    with login_page.page.expect_response('https://practice.expandtesting.com/secure') as response_info:
+    with login_page.page.expect_response('https://practice.expandtesting.com/secure') as response_info: # expect_response opisane w src/tests/test_template.py::test_09
         login_page.sign_in(username='practice',
                            password='SuperSecretPassword!')
     shared_data['response_status'] = response_info.value.status # zapisujemy status response'a w słowniku

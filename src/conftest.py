@@ -33,28 +33,7 @@ def browser_type(request) -> str:
 
 
 @pytest.fixture
-def browser_context(browser, request) -> Iterator[BrowserContext]: # fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
-    context = browser.new_context(no_viewport=True)
-    context.tracing.start( # tracing pozwala na podgląd przebiegu całego testu ze szczegółami w przeglądarce (playwright show-trace path/to/trace.zip)
-        screenshots=True,
-        snapshots=True,
-        sources=True
-    )
-    yield context # zwraca context i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
-
-    if request.node.rep_call.failed: # zapisujemy trace tylko kiedy test będzie negatywny
-        context.tracing.stop(
-            path=f'./artifacts/tracing/'
-                 f'{request.node.module.__name__}_{request.node.name}_trace_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.zip')
-                    # nazwa pliku moduł_nazwa-testu_trace_YYYY-MM-DD_H-M-S.zip
-    else:
-        context.tracing.stop()
-
-    context.close()
-
-
-@pytest.fixture
-def browser(browser_type, is_headless) -> Iterator[Browser]: # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
+def browser(browser_type: str, is_headless: bool) -> Iterator[Browser]: # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
     with sync_playwright() as playwright:
         match browser_type:
             case 'chrome':
@@ -70,7 +49,30 @@ def browser(browser_type, is_headless) -> Iterator[Browser]: # fixture dla przeg
 
 
 @pytest.fixture
-def page(browser_context) -> Iterator[Page]: # fixture dla strony, przyjmuje context jako argument
+def browser_context(browser: Browser, request) -> Iterator[BrowserContext]: # fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
+    context = browser.new_context(no_viewport=True)
+    context.tracing.start( # tracing pozwala na podgląd przebiegu całego testu ze szczegółami w przeglądarce (playwright show-trace path/to/trace.zip)
+        screenshots=True,
+        snapshots=True,
+        sources=True
+    )
+    context.set_default_timeout(15000) # ustawia globalny defaultowy timeout (domyślnie 30000ms)
+
+    yield context # zwraca context i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
+
+    if request.node.rep_call.failed: # zapisujemy trace tylko kiedy test będzie negatywny
+        context.tracing.stop(
+            path=f'./artifacts/tracing/'
+                 f'{request.node.module.__name__}.{request.node.name}_trace_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.zip')
+                    # nazwa pliku - moduł.nazwa-testu_trace_YYYY-MM-DD_H-M-S.zip
+    else:
+        context.tracing.stop()
+
+    context.close()
+
+
+@pytest.fixture
+def page(browser_context: BrowserContext) -> Iterator[Page]: # fixture dla strony, przyjmuje context jako argument
     page = browser_context.new_page()
     yield page # zwraca page i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
     page.close()
@@ -79,17 +81,17 @@ def page(browser_context) -> Iterator[Page]: # fixture dla strony, przyjmuje con
 # W argumencie funkcji testowej trzeba podać login_page, wtedy zostanie utworzona nowa instancja klasy LoginPage
 # na potrzeby tego testu. Nie trzeba będzie tego robić manualnie w teście.
 @pytest.fixture
-def login_page(page) -> LoginPage:
+def login_page(page: Page) -> LoginPage:
     return LoginPage(page)
 
 
 @pytest.fixture
-def home_page(page) -> HomePage:
+def home_page(page: Page) -> HomePage:
     return HomePage(page)
 
 
 @pytest.fixture
-def logged_in_user(page, login_page: LoginPage) -> HomePage:
+def logged_in_user(page: Page, login_page: LoginPage) -> HomePage:
     login_page.sign_in(username=AUTH_DATA['standard_user'].get('username'),
                        password=AUTH_DATA['standard_user'].get('password'))
     return HomePage(page)
