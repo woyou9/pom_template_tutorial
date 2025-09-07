@@ -1,12 +1,13 @@
 import datetime
+from typing import Iterator
 import pytest
-from playwright.sync_api import sync_playwright, Page
+from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext
 from pages.page_objects.home_page import HomePage
 from pages.page_objects.login_page import LoginPage
 from utils.json_data_helper import AUTH_DATA
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser) -> None:
     parser.addoption(
         '--test-browser',
         action='store',
@@ -32,23 +33,7 @@ def browser_type(request) -> str:
 
 
 @pytest.fixture
-def browser(browser_type, is_headless): # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
-    with sync_playwright() as playwright:
-        match browser_type:
-            case 'chrome':
-                browser = playwright.chromium.launch(headless=is_headless, args=['--start-maximized'])
-            case 'firefox':
-                browser = playwright.firefox.launch(headless=is_headless, args=['--kiosk'])
-            case 'webkit':
-                browser = playwright.webkit.launch(headless=is_headless)
-            case 'edge':
-                browser = playwright.chromium.launch(headless=is_headless, channel='msedge', args=['--start-maximized'])
-        yield browser # zwraca przeglądarkę i zatrzymuje wykonywanie funkcji, po teście wróci tutaj ją zamknać
-        browser.close()
-
-
-@pytest.fixture
-def browser_context(browser, request): # fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
+def browser_context(browser, request) -> Iterator[BrowserContext]: # fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
     context = browser.new_context(no_viewport=True)
     context.tracing.start( # tracing pozwala na podgląd przebiegu całego testu ze szczegółami w przeglądarce (playwright show-trace path/to/trace.zip)
         screenshots=True,
@@ -69,7 +54,23 @@ def browser_context(browser, request): # fixture dla contextu przeglądarki, prz
 
 
 @pytest.fixture
-def page(browser_context): # fixture dla strony, przyjmuje context jako argument
+def browser(browser_type, is_headless) -> Iterator[Browser]: # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
+    with sync_playwright() as playwright:
+        match browser_type:
+            case 'chrome':
+                browser = playwright.chromium.launch(headless=is_headless, args=['--start-maximized'])
+            case 'firefox':
+                browser = playwright.firefox.launch(headless=is_headless, args=['--kiosk'])
+            case 'webkit':
+                browser = playwright.webkit.launch(headless=is_headless)
+            case 'edge':
+                browser = playwright.chromium.launch(headless=is_headless, channel='msedge', args=['--start-maximized'])
+        yield browser # zwraca przeglądarkę i zatrzymuje wykonywanie funkcji, po teście wróci tutaj ją zamknać
+        browser.close()
+
+
+@pytest.fixture
+def page(browser_context) -> Iterator[Page]: # fixture dla strony, przyjmuje context jako argument
     page = browser_context.new_page()
     yield page # zwraca page i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
     page.close()
@@ -102,6 +103,3 @@ def per_function_fixture():
 @pytest.fixture(scope='session') # zobacz tests/test_template/test_06 i test_07
 def per_session_fixture():
     print('Fixture')
-
-
-

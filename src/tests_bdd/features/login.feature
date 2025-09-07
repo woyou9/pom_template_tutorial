@@ -3,7 +3,7 @@ Feature: Login
   Scenario: Signing in with correct data
     Given User on login page
     When I enter correct login and password and click "Login"
-    Then I see "Secure Area page for Automation Testing Practice" text
+    Then I see "Secure Area page for Automation Testing Practice" text and response from /secure is 200
     And "Logout" button is visible
 
   Scenario: Signing in with incorrect password

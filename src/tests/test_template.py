@@ -120,7 +120,6 @@ def test_09(login_page: LoginPage) -> None:
                            password='SuperSecretPassword!') # w środku context managera akcje wywołujące response
 
     # response_info.value daje dostęp do konkretnych informacji tego response'a
-    logger.info(response_info.value.status)
-    logger.info(response_info.value.status_text)
-    logger.info(response_info.value.request)
-
+    logger.info(f'Response status: {response_info.value.status}')
+    logger.info(f'Response status text: {response_info.value.status_text}')
+    logger.info(f'Request: {response_info.value.request}')
