@@ -56,4 +56,3 @@ def assert_error_message(login_page: LoginPage, text: str) -> None:
 @then('"Logout" button is visible')
 def assert_logout_button(home_page: HomePage) -> None:
     expect(home_page.page.locator('a[href="/logout"]')).to_be_visible()
-

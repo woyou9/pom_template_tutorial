@@ -14,7 +14,7 @@ def pytest_addoption(parser) -> None:
         default='chrome',
         choices=['chrome', 'firefox', 'webkit', 'edge'],
         help='Select browser to run tests in.'
-    ), # dodanie opcji do pytest (takiej jak np. -s -v -m itp.) - w tym wypadku wybór przeglądarki np. --test-browser firefox
+    ), # parser.addoption() - dodanie opcji do pytest (takiej jak np. -s -v -m itp.), w tym wypadku wybór przeglądarki np. --test-browser firefox
     parser.addoption(
         '--headless',
         action='store_true',
@@ -37,26 +37,31 @@ def browser(browser_type: str, is_headless: bool) -> Iterator[Browser]: # fixtur
     with sync_playwright() as playwright:
         match browser_type:
             case 'chrome':
-                browser = playwright.chromium.launch(headless=is_headless, args=['--start-maximized'])
+                browser: Browser = playwright.chromium.launch(headless=is_headless,
+                                                              args=['--start-maximized'])
             case 'firefox':
-                browser = playwright.firefox.launch(headless=is_headless, args=['--kiosk'])
+                browser: Browser = playwright.firefox.launch(headless=is_headless,
+                                                             args=['--kiosk'])
             case 'webkit':
-                browser = playwright.webkit.launch(headless=is_headless)
+                browser: Browser = playwright.webkit.launch(headless=is_headless)
             case 'edge':
-                browser = playwright.chromium.launch(headless=is_headless, channel='msedge', args=['--start-maximized'])
+                browser: Browser = playwright.chromium.launch(headless=is_headless,
+                                                              channel='msedge',
+                                                              args=['--start-maximized'])
         yield browser # zwraca przeglądarkę i zatrzymuje wykonywanie funkcji, po teście wróci tutaj ją zamknać
         browser.close()
 
 
 @pytest.fixture
 def browser_context(browser: Browser, request) -> Iterator[BrowserContext]: # fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
-    context = browser.new_context(no_viewport=True)
+    context: BrowserContext = browser.new_context(no_viewport=True)
     context.tracing.start( # tracing pozwala na podgląd przebiegu całego testu ze szczegółami w przeglądarce (playwright show-trace path/to/trace.zip)
         screenshots=True,
         snapshots=True,
         sources=True
     )
     context.set_default_timeout(15000) # ustawia globalny defaultowy timeout (domyślnie 30000ms)
+                                       # można nadpisać globalny timeout dla konkretnych akcji np. self.jakiś_przycisk.click(timeout=5000)
 
     yield context # zwraca context i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
 
@@ -73,7 +78,7 @@ def browser_context(browser: Browser, request) -> Iterator[BrowserContext]: # fi
 
 @pytest.fixture
 def page(browser_context: BrowserContext) -> Iterator[Page]: # fixture dla strony, przyjmuje context jako argument
-    page = browser_context.new_page()
+    page: Page = browser_context.new_page()
     yield page # zwraca page i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
     page.close()
 
@@ -98,10 +103,10 @@ def logged_in_user(page: Page, login_page: LoginPage) -> HomePage:
 
 
 @pytest.fixture(scope='function') # zobacz tests/test_template/test_06 i test_07
-def per_function_fixture():
+def per_function_fixture() -> None:
     print('Fixture')
 
 
 @pytest.fixture(scope='session') # zobacz tests/test_template/test_06 i test_07
-def per_session_fixture():
+def per_session_fixture() -> None:
     print('Fixture')

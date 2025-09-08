@@ -38,7 +38,7 @@ def test_01(page: Page) -> None:
 
 # odpali test raz dla każdej przeglądrki (4 razy - chrome/firefox/webkit/edge), dokładniejszy przykład parametryzacji w test_04
 @pytest.mark.parametrize('browser_type', BROWSER_TYPES)
-def test_02(page, browser_type) -> None:
+def test_02(page: Page, browser_type: str) -> None:
     page.goto(url='https:\\google.com', wait_until='load')
     page.get_by_role(role='button', name='Odrzuć wszystko').click()
 
@@ -60,7 +60,7 @@ def test_03(login_page: LoginPage, home_page: HomePage) -> None: # wykorzystanie
 # np. @pytest.mark.parametrize('jeden_test', ['element 1', 'element 2', 'element 3', 'element 4']) wykona 4 testy
 # analogicznie [{"a": 1}, {"b": 2}, {"c": 3}, {"d": 4}] też wukona 4 testy, nawet gdyby każdy z tych słowników miał więcej pozycji {"key":"value"}
 @pytest.mark.parametrize('test_case', LOGIN_SCENARIOS) # struktura pliku w data/login_scenarios.json
-def test_04(login_page: LoginPage, home_page: HomePage, test_case) -> None: # test_case w tym wypadku to jeden słownik
+def test_04(login_page: LoginPage, home_page: HomePage, test_case: dict) -> None: # test_case w tym wypadku to jeden słownik
     logger.info(f'Now running test case: {test_case.get("test_case_name")}') # log wyświetlający który przypadek testowy jest obecnie wykonywany
 
     login_page.sign_in(username=test_case.get('username'),  # ze słownika wyciągana jest wartość dla klucza 'username'
@@ -88,12 +88,12 @@ def test_05(logged_in_user: HomePage) -> None: # wykorzystanie fixture logged_in
 # Test_07 wyprintuje "Fixture" dla całej sesji, czyli tylko raz niezależnie ile jest funkcji testowych (per_session_fixture)
 # (scope='function') jest domyślną opcją, czyli pytest.fixture = pytest.fixture(scope='function')
 @pytest.mark.parametrize('test', ['1 test', '2 test', '3 test'])
-def test_06(per_function_fixture, test) -> None:
+def test_06(per_function_fixture, test: str) -> None:
     pass
 
 
 @pytest.mark.parametrize('test', ['1 test', '2 test', '3 test'])
-def test_07(per_session_fixture, test) -> None:
+def test_07(per_session_fixture, test: str) -> None:
     pass
 
 
@@ -110,9 +110,9 @@ def test_08(page: Page) -> None:
         logger.info(e.text_content()) # text wszystkich komórek tabeli
 
     
-    col_names = ['First Name', 'Last Name', 'Email']
+    col_names: list = ['First Name', 'Last Name', 'Email']
     
-    def get_column_number(column_names: list[str]): # funkcja która zwróci listę numerów kolumn o danych nazwach
+    def get_column_number(column_names: list[str]) -> list[int]: # funkcja która zwróci listę numerów kolumn o danych nazwach
         return [page.locator('#table1 thead tr th').all_text_contents().index(name) + 1 for name in column_names]
 
     for number in get_column_number(col_names):
