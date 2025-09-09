@@ -19,7 +19,18 @@ def pytest_addoption(parser) -> None:
         '--headless',
         action='store_true',
         help='Add to run in headless mode (no GUI)'
-    ) # dodanie --headless spowoduje, że test nie będzie widoczny
+    ), # dodanie --headless spowoduje, że test nie będzie widoczny
+    parser.addoption(
+        '--slow_mo',
+        action='store',
+        default=0,
+        help='Delay between Playwright actions in ms'
+    )
+
+
+@pytest.fixture(scope='session')
+def get_slowmo_value(request) -> int:
+    return int(request.config.getoption('--slow_mo'))
 
 
 @pytest.fixture(scope='session')
@@ -33,21 +44,25 @@ def browser_type(request) -> str:
 
 
 @pytest.fixture
-def browser(browser_type: str, is_headless: bool) -> Iterator[Browser]: # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
+def browser(browser_type: str, is_headless: bool, get_slowmo_value: int) -> Iterator[Browser]: # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
     with sync_playwright() as playwright:
         match browser_type:
             case 'chrome':
                 browser: Browser = playwright.chromium.launch(headless=is_headless,
-                                                              args=['--start-maximized'])
+                                                              args=['--start-maximized'],
+                                                              slow_mo=get_slowmo_value)
             case 'firefox':
                 browser: Browser = playwright.firefox.launch(headless=is_headless,
-                                                             args=['--kiosk'])
+                                                             args=['--kiosk'],
+                                                             slow_mo=get_slowmo_value)
             case 'webkit':
-                browser: Browser = playwright.webkit.launch(headless=is_headless)
+                browser: Browser = playwright.webkit.launch(headless=is_headless,
+                                                            slow_mo=get_slowmo_value)
             case 'edge':
                 browser: Browser = playwright.chromium.launch(headless=is_headless,
                                                               channel='msedge',
-                                                              args=['--start-maximized'])
+                                                              args=['--start-maximized'],
+                                                              slow_mo=get_slowmo_value)
         yield browser # zwraca przeglądarkę i zatrzymuje wykonywanie funkcji, po teście wróci tutaj ją zamknać
         browser.close()
 

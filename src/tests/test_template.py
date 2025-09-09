@@ -2,7 +2,7 @@ import pytest
 from pages.page_objects.home_page import HomePage
 from utils.logger import logger
 from utils.json_data_helper import BROWSER_TYPES, LOGIN_SCENARIOS
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, expect, APIResponse
 from pages.page_objects.login_page import LoginPage
 
 
@@ -130,3 +130,29 @@ def test_09(login_page: LoginPage) -> None:
     logger.info(f'Response status: {response_info.value.status}')
     logger.info(f'Response status text: {response_info.value.status_text}')
     logger.info(f'Request: {response_info.value.request}')
+
+
+def test_10(page: Page) -> None:
+    response: APIResponse = page.request.get('https://playwright.dev/python/docs/api/class-apiresponseassertions')
+    # page.request jest przydatny w momencie, gdy chcemy w jednym flow wykorzystać API i UI,
+    # nie ma wtedy konieczności autoryzacji w osobnym kliencie API - wykorzysta cookiesy z contextu tego page'a
+    expect(response).to_be_ok()
+
+
+    # przykładowy flow: (nie zadziała bo nie ma takiej strony, jak znajdę to wrzucę działający przykład)
+    #
+    # page.goto('https://randomowastrona.com/') <- wchodzimy na stronę przez UI i logujemy się
+    # page.login()
+    #
+    # response = page.request.post(  <- dodajemy wiadomość przez API
+    #     'https://randomowastrona.com/api/wiadomosci',
+    #     headers={"Content-Type": "application/json"},
+    #     data={"message_id": {id_wiadomości}, "title": "jakiś tytuł", "message_text": "super ważna wiadomość wow"}
+    # )
+    # expect(response).to_be_ok()
+    #
+    # page.goto(f'https://randomowastrona.com/wiadomosci/{id_wiadomości}') <- przechodzimy do dodanej wiadomości w UI
+    #
+    # expect(page.get_by_text('jakiś tytuł')).to_be_visible()
+    # expect(page.get_by_text('super ważna wiadomość wow')).to_be_visible() <- sprawdzamy czy tytuł i treść wiadomości są widoczne na froncie
+
