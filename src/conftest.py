@@ -22,18 +22,12 @@ def pytest_addoption(parser) -> None:
         '--headless',
         action='store_true',
         help='Add to run in headless mode (no GUI)'
-    ), # dodanie --headless spowoduje, że test nie będzie widoczny
-    parser.addoption(
-        '--slow_mo',
-        action='store',
-        default=0,
-        help='Delay between Playwright actions in ms'
-    )
+    ) # dodanie --headless spowoduje, że test nie będzie widoczny
 
 
 @pytest.fixture(scope='session')
 def get_slowmo_value(request) -> int:
-    return int(request.config.getoption('--slow_mo'))
+    return int(request.config.getoption('--slowmo'))
 
 
 @pytest.fixture(scope='session')
