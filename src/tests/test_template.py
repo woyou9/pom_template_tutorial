@@ -1,9 +1,13 @@
 import pytest
 from pages.page_objects.home_page import HomePage
 from utils.logger import logger
-from utils.json_data_helper import BROWSER_TYPES, LOGIN_SCENARIOS
+from utils.json_data_helper import JSONDataHelper
 from playwright.sync_api import Page, expect, APIResponse
 from pages.page_objects.login_page import LoginPage
+
+
+BROWSER_TYPES: dict = JSONDataHelper('browser_types.json').load()
+LOGIN_SCENARIOS: list[dict] = JSONDataHelper('login_scenarios.json').load('login_scenarios')
 
 
 # Wybierz przeglądarkę jako argument

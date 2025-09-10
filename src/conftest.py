@@ -4,7 +4,10 @@ import pytest
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext
 from pages.page_objects.home_page import HomePage
 from pages.page_objects.login_page import LoginPage
-from utils.json_data_helper import AUTH_DATA
+from utils.json_data_helper import JSONDataHelper
+
+
+AUTH_DATA: dict = JSONDataHelper('auth_data.json').load()
 
 
 def pytest_addoption(parser) -> None:
