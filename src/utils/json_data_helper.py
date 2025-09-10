@@ -16,7 +16,7 @@ class JSONDataHelper:
         Metody:
             .load(section: str | None = None) -> Any
             - section: opcjonalny klucz (sekcja) do wyciągnięcia z JSON
-            - Jeśli nie podamy sekcji, zwraca cały plik jako słownik.
+            - Jeśli nie podamy sekcji, zwraca cały plik.
 
         Przykładowe użycie:
             Zawartość całego pliku:
