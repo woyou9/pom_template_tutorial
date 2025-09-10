@@ -38,18 +38,18 @@ class JSONDataHelper:
         self.file_name = file_name
 
         try:
-            matches = list(self.search_root.rglob(file_name))
+            matches = list(self.search_root.rglob(file_name, case_sensitive=True))
         except Exception as e:
-            logger.error(f'Error searching for file "{file_name}" under "{self.search_root}". Exception: {e}')
+            logger.error(f'Error searching for file "{file_name}" under "{self.search_root.resolve()}". Exception: {e}')
             raise
 
         if not matches:
-            logger.error(f'File "{file_name}" not found under "{self.search_root}"')
-            raise FileNotFoundError(f'File "{file_name}" not found under "{self.search_root}"')
+            logger.error(f'File "{file_name}" not found under "{self.search_root.resolve()}".')
+            raise FileNotFoundError(f'File "{file_name}" not found under "{self.search_root.resolve()}".')
 
         if len(matches) > 1:
-            logger.error(f'Multiple files named "{file_name}" found under "{self.search_root}": {matches}')
-            raise FileExistsError(f'Multiple files named "{file_name}" found under "{self.search_root}": {matches}')
+            logger.error(f'Multiple files named "{file_name}" found under "{self.search_root.resolve()}": {matches}')
+            raise FileExistsError(f'Multiple files named "{file_name}" found under "{self.search_root.resolve()}": {matches}')
 
         self.file_path = matches[0]
 
@@ -72,11 +72,11 @@ class JSONDataHelper:
             return data
 
         if not isinstance(data, dict):
-            logger.error(f'Top-level JSON structure must be an object in "{self.file_path}", got {type(data)}')
-            raise ValueError(f'Top-level JSON structure must be an object, got {type(data)}')
+            logger.error(f'To use .load(section) JSON structure must be an object in "{self.file_path}", got {type(data)}.')
+            raise ValueError(f'To use .load(section) JSON structure must be an object, got {type(data)}.')
 
         if section not in data:
-            logger.error(f'Section "{section}" not found in "{self.file_path}"')
-            raise KeyError(f'Section "{section}" not found in {self.file_path}')
+            logger.error(f'Section "{section}" not found in "{self.file_path}".')
+            raise KeyError(f'Section "{section}" not found in {self.file_path}.')
 
         return data[section]
