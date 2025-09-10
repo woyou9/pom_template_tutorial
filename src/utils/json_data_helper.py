@@ -27,13 +27,13 @@ class JSONDataHelper:
                 "admin": {"username": "...", "password": "..."}
             }
             Zawartość konkretnej sekcji:
-            standard_user = AUTH_DATA.load('standard_user')
-            standard_user zwróci słownik:
+            standard_user_data = JSONDataHelper('auth_data.json').load('standard_user')
+            standard_user_data zwróci słownik:
             {
                 "username": "...", "password": "..."
             }
         """
-    def __init__(self, file_name: str, search_root: str | Path = "."):
+    def __init__(self, file_name: str, search_root: str | Path = '.'):
         self.search_root = Path(search_root)
         self.file_name = file_name
 
@@ -53,13 +53,13 @@ class JSONDataHelper:
 
         self.file_path = matches[0]
 
-        if self.file_path.suffix.lower() != ".json":
+        if self.file_path.suffix.lower() != '.json':
             logger.error(f'Invalid file extension for "{self.file_path}". Expected a .json file.')
             raise ValueError(f'Invalid file extension for "{self.file_path}". Expected a .json file.')
 
     def load(self, section: str | None = None) -> Any:
         try:
-            with self.file_path.open("r", encoding="utf-8") as f:
+            with self.file_path.open('r', encoding='utf-8') as f:
                 data = json.load(f)
         except json.decoder.JSONDecodeError as e:
             logger.error(f'Invalid JSON file "{self.file_path}". Exception: {e}')
