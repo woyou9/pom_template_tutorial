@@ -7,7 +7,7 @@ from utils.logger import logger
 
 class LoginPage:
     login_page_url = 'https://practice.expandtesting.com/login' # pole klasy, nie instancji klasy - wspólne dla wszystkich obiektów klasy LoginPage
-    
+
     def __init__(self, page: Page):
         self.page = page # rozszerzenie funkcjonalności page'a klasy o metody playwrightowego page (np. .goto(), .click(), .fill() itd.)
         # Przykładowe pola instancji klasy LoginPage i różne sposoby wyszukiwania elementów na stronie. Hardcoded i z użyciem klas locatorów.
@@ -27,7 +27,6 @@ class LoginPage:
         self.password_input_field.clear()
         self.password_input_field.fill(password)
         self.login_button.click()
-
 
     def accept_cookies(self) -> None:
         try:

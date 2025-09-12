@@ -79,8 +79,8 @@ def browser_context(browser: Browser, request) -> Iterator[BrowserContext]: # fi
 
     if request.node.rep_call.failed: # zapisujemy trace tylko kiedy test będzie negatywny
         context.tracing.stop(
-            path=f'./artifacts/tracing/'
-                 f'{request.node.module.__name__}.{request.node.name}_trace_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.zip')
+            path=f'./artifacts/tracing/{request.node.module.__name__}.{request.node.name}_trace_'
+                 f'{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.zip')
                     # nazwa pliku - moduł.nazwa-testu_trace_YYYY-MM-DD_H-M-S.zip
     else:
         context.tracing.stop()

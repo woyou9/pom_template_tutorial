@@ -151,7 +151,7 @@ def test_10(page: Page) -> None:
     # response = page.request.post(  <- dodajemy wiadomość przez API
     #     'https://randomowastrona.com/api/wiadomosci',
     #     headers={"Content-Type": "application/json"},
-    #     data={"message_id": {id_wiadomości}, "title": "jakiś tytuł", "message_text": "super ważna wiadomość wow"}
+    #     data={ "message_id": {id_wiadomości}, "title": "jakiś tytuł", "message_text": "super ważna wiadomość wow" }
     # )
     # expect(response).to_be_ok()
     #

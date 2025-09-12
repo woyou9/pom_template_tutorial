@@ -23,8 +23,8 @@ class JSONDataHelper:
             full_data = JSONDataHelper('auth_data.json').load()
             full_data zwróci słownik:
             {
-                "standard_user": {"username": "...", "password": "..."},
-                "admin": {"username": "...", "password": "..."}
+                "standard_user": { "username": "...", "password": "..." },
+                "admin": { "username": "...", "password": "..." }
             }
             Zawartość konkretnej sekcji:
             standard_user_data = JSONDataHelper('auth_data.json').load('standard_user')
