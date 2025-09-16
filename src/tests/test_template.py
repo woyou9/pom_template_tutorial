@@ -91,6 +91,7 @@ def test_05(logged_in_user: HomePage) -> None: # wykorzystanie fixture logged_in
 # Test_06 wyprintuje "Fixture" 3 razy, 1 raz na każde wykonanie funkcji testowej (per_function_fixture)
 # Test_07 wyprintuje "Fixture" dla całej sesji, czyli tylko raz niezależnie ile jest funkcji testowych (per_session_fixture)
 # (scope='function') jest domyślną opcją, czyli pytest.fixture = pytest.fixture(scope='function')
+# analogicznie pytest.fixture(scope='module') wykona się raz dla całego pliku
 @pytest.mark.parametrize('test', ['1 test', '2 test', '3 test'])
 def test_06(per_function_fixture, test: str) -> None:
     pass
@@ -159,4 +160,3 @@ def test_10(page: Page) -> None:
     #
     # expect(page.get_by_text('jakiś tytuł')).to_be_visible()
     # expect(page.get_by_text('super ważna wiadomość wow')).to_be_visible() <- sprawdzamy czy tytuł i treść wiadomości są widoczne na froncie
-

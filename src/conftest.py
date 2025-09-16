@@ -116,9 +116,9 @@ def logged_in_user(page: Page, login_page: LoginPage) -> HomePage:
 
 @pytest.fixture(scope='function') # zobacz tests/test_template/test_06 i test_07
 def per_function_fixture() -> None:
-    print('Fixture')
+    print('Per function fixture')
 
 
 @pytest.fixture(scope='session') # zobacz tests/test_template/test_06 i test_07
 def per_session_fixture() -> None:
-    print('Fixture')
+    print('Per session fixture')
