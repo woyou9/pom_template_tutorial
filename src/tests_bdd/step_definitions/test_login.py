@@ -40,29 +40,24 @@ def enter_credentials_and_submit(login_page: LoginPage, shared_data: dict) -> No
                            password='SuperSecretPassword!')
     shared_data['response_status'] = response_info.value.status  # zapisujemy status response'a w słowniku
 
-
 @when('I enter correct login but incorrect password and click "Login"')
 def enter_credentials_and_submit(login_page: LoginPage) -> None:
     login_page.sign_in(username='practice',
                        password='randomwrongpassw0rd!123')
-
 
 @when('I enter incorrect login and correct password and click "Login"')
 def enter_credentials_and_submit(login_page: LoginPage) -> None:
     login_page.sign_in(username='randomwrongusername123',
                        password='SuperSecretPassword!')
 
-
 @then(parsers.parse('I see "{text}" text and response from /secure is 200'))
 def assert_logged_in(login_page: LoginPage, text: str, shared_data: dict) -> None:
     expect(login_page.page.get_by_text(text)).to_be_visible()
     assert shared_data['response_status'] == 200  # wykorzystujemy wartość ze słownika do asercji w kolejnym kroku
 
-
 @then(parsers.parse('I see "{text}" text'))
 def assert_error_message(login_page: LoginPage, text: str) -> None:
     expect(login_page.page.get_by_text(text)).to_be_visible()
-
 
 @then('"Logout" button is visible')
 def assert_logout_button(home_page: HomePage) -> None:
