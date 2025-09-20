@@ -65,4 +65,4 @@ class SomePage(BasePage): # dziedziczy po BasePage
     def random_method(self) -> None:
         self.side_menu.settings_button.click() # <- dostęp do side_menu
         self.link_button('tekst na przycisku').click() # <- dostep do metod pomocniczych
-        self.button('tekst na przycisku').click()
+        self.button('tekst na przycisku').click()      # <-

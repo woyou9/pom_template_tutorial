@@ -4,10 +4,12 @@ import pytest
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext
 from pages.page_objects.home_page import HomePage
 from pages.page_objects.login_page import LoginPage
+from utils.database_connection import DatabaseConnection
 from utils.json_data_helper import JSONDataHelper
 
 
 AUTH_DATA: dict = JSONDataHelper('auth_data.json').load()
+DATABASE_INFO: dict = JSONDataHelper('database_info.json').load()
 
 
 def pytest_addoption(parser) -> None:
@@ -22,7 +24,21 @@ def pytest_addoption(parser) -> None:
         '--headless',
         action='store_true',
         help='Add to run in headless mode (no GUI)'
-    ) # dodanie --headless spowoduje, że test nie będzie widoczny
+    ), # dodanie --headless spowoduje, że test nie będzie widoczny
+    parser.addoption(
+        '--env',
+        action='store',
+        default='localhost',
+        choices=['localhost', 'preprod', 'prod'],
+        help='Choose the environment to run tests in.'
+    ) # wybór środowiska, nie ma wpływu na żadne testy w tym projekcie, użyte jedynie w przykładzie dotyczącym bazy danych
+
+
+# return request.config.getoption(--option)
+# zwróci wartość podaną dla konkretnej opcji w terminalu
+@pytest.fixture(scope='session')
+def test_environment(request):
+    return request.config.getoption('--env')
 
 
 @pytest.fixture(scope='session')
@@ -37,11 +53,23 @@ def is_headless(request) -> bool:
 
 @pytest.fixture(scope='session')
 def browser_type(request) -> str:
-    return request.config.getoption('--test-browser') # request w czasie testu zobaczy na wartość przekazaną do opcji --test-browser
+    return request.config.getoption('--test-browser')
 
 
+# fixture na połączenie z bazą danych, wykorzystuje klase DatabaseConnection
+# przekazuje dane (zależne od opcji --env) z DATABASE_INFO (plik ./data/database_info.json) do konstruktora klasy i tworzy obiekt reprezentujący połączenie z bazą
+# klasa DatabaseConnection znajduje się w pliku ./utils/database_connection.py
 @pytest.fixture
-def browser(browser_type: str, is_headless: bool, get_slowmo_value: int) -> Iterator[Browser]: # fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
+def database_connection(test_environment):
+    db_config: dict = DATABASE_INFO[test_environment]
+    db_connection: DatabaseConnection = DatabaseConnection(database_config=db_config)
+    yield db_connection
+    db_connection.close()
+
+
+# fixture dla przeglądarki, fixture browser_type zwróci string przekazany do opcji --test_browser i na podstawie tego utworzy odpowiednią przeglądarkę
+@pytest.fixture
+def browser(browser_type: str, is_headless: bool, get_slowmo_value: int) -> Iterator[Browser]:
     with sync_playwright() as playwright:
         match browser_type:
             case 'chrome':
@@ -64,10 +92,12 @@ def browser(browser_type: str, is_headless: bool, get_slowmo_value: int) -> Iter
         browser.close()
 
 
+# fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
 @pytest.fixture
-def browser_context(browser: Browser, request) -> Iterator[BrowserContext]: # fixture dla contextu przeglądarki, przyjmuje przeglądarkę jako argument
+def browser_context(browser: Browser, request) -> Iterator[BrowserContext]:
     context: BrowserContext = browser.new_context(no_viewport=True)
-    context.tracing.start( # tracing pozwala na podgląd przebiegu całego testu ze szczegółami w przeglądarce (playwright show-trace path/to/trace.zip)
+    # tracing pozwala na podgląd przebiegu całego testu ze szczegółami w przeglądarce (playwright show-trace path/to/trace.zip)
+    context.tracing.start(
         screenshots=True,
         snapshots=True,
         sources=True
@@ -75,7 +105,8 @@ def browser_context(browser: Browser, request) -> Iterator[BrowserContext]: # fi
     context.set_default_timeout(15000) # ustawia globalny defaultowy timeout (domyślnie 30000ms)
                                        # można nadpisać globalny timeout dla konkretnych akcji np. self.jakiś_przycisk.click(timeout=5000)
 
-    yield context # zwraca context i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
+    yield context
+    # zwraca context i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
 
     if request.node.rep_call.failed: # zapisujemy trace tylko kiedy test będzie negatywny
         context.tracing.stop(
@@ -88,11 +119,19 @@ def browser_context(browser: Browser, request) -> Iterator[BrowserContext]: # fi
     context.close()
 
 
+# fixture dla strony, przyjmuje context jako argument
 @pytest.fixture
-def page(browser_context: BrowserContext) -> Iterator[Page]: # fixture dla strony, przyjmuje context jako argument
+def page(browser_context: BrowserContext) -> Iterator[Page]:
     page: Page = browser_context.new_page()
-    yield page # zwraca page i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
+    yield page
+    # zwraca page i zatrzymuje wykonywanie funkcji, po teście wróci tutaj go zamknać
     page.close()
+
+
+# fixture zwracający pusty słownik - pozwala na dzielenie danych między krokami
+@pytest.fixture(scope='module')
+def bdd_shared_data() -> dict:
+    return {}
 
 
 # W argumencie funkcji testowej trzeba podać login_page, wtedy zostanie utworzona nowa instancja klasy LoginPage
