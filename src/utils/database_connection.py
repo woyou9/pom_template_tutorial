@@ -15,7 +15,7 @@ class DatabaseConnection:
         return (f'an instance of DatabaseConnection class, connected to "{self.db_name}" database '
                 f'at {self.host}:{self.port} as "{self.user}" user.')
 
-    def connect(self): # <- metoda connect wykorzystuje bibliotekę psycopg2 żeby połączyć się z bazą danych
+    def connect(self) -> None: # <- metoda connect wykorzystuje bibliotekę psycopg2 żeby połączyć się z bazą danych
         if not all([self.db_name, self.user, self.password, self.host, self.port]):
             missing = [
                 param for param in
@@ -36,7 +36,7 @@ class DatabaseConnection:
             logger.error(f'Failed to connect to the "{self.db_name}" database.')
             raise
 
-    def execute_sql(self, sql_query: str, params: tuple = None): # <- metoda execute_sql służy do wykonywania zapytań
+    def execute_sql(self, sql_query: str, params: tuple = None) -> None | list[tuple]: # <- metoda execute_sql służy do wykonywania zapytań
         if not self.connection:
             raise ConnectionError("Can't execute query, database connection not established.")
         try:
@@ -60,7 +60,7 @@ class DatabaseConnection:
             self.connection.rollback()
             raise
 
-    def close(self): # <- zamknięcie połączenia z bazą
+    def close(self) -> None: # <- zamknięcie połączenia z bazą
         if self.connection:
             self.connection.close()
             logger.info(f'Connection to "{self.db_name}" database at {self.host}:{self.port} closed.')

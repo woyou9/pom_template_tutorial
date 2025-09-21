@@ -3,6 +3,7 @@ from playwright.sync_api import Page, Locator
 
 # klasa bazowa z której dziedziczą wszystkie pages, można w niej definiować metody pomagające z elementami
 # które powtarzają się w całej aplikacji, czyli są tak samo zbudowane na każdej stronie
+# nie ma wpływu na testy w tym projekcie, jest tylko jako proof of concept
 class BasePage:
     def __init__(self, page: Page):
         self.page = page
