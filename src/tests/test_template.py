@@ -43,7 +43,7 @@ def test_01(page: Page) -> None:
 # odpali test raz dla każdej przeglądrki (4 razy - chrome/firefox/webkit/edge), dokładniejszy przykład parametryzacji w test_04
 @pytest.mark.parametrize('browser_type', BROWSER_TYPES)
 def test_02(page: Page, browser_type: str) -> None:
-    page.goto(url='https:\\google.com', wait_until='load')
+    page.goto(url='https://google.com', wait_until='load')
     page.get_by_role(role='button', name='Odrzuć wszystko').click()
 
 
@@ -138,9 +138,10 @@ def test_09(login_page: LoginPage) -> None:
 
 
 def test_10(page: Page) -> None:
-    response: APIResponse = page.request.get('https://playwright.dev/python/docs/api/class-apiresponseassertions')
+    response: APIResponse = page.request.get('https://jsonplaceholder.typicode.com/posts')
     # page.request jest przydatny w momencie, gdy chcemy w jednym flow wykorzystać API i UI,
     # nie ma wtedy konieczności autoryzacji w osobnym kliencie API - wykorzysta cookiesy z contextu tego page'a
+    print(response.json())
     expect(response).to_be_ok()
 
 
@@ -160,3 +161,31 @@ def test_10(page: Page) -> None:
     #
     # expect(page.get_by_text('jakiś tytuł')).to_be_visible()
     # expect(page.get_by_text('super ważna wiadomość wow')).to_be_visible() <- sprawdzamy czy tytuł i treść wiadomości są widoczne na froncie
+
+
+def test_11(page: Page) -> None:
+    from unittest.mock import MagicMock
+
+    mock_response = MagicMock() # tworzymy obiekt klasy MagicMock
+    mock_response.json.return_value = [
+        { "userId": 1, "id": 1, "title": "Mocked title", "body": "Mocked body" },
+        { "userId": 2, "id": 2, "title": "Another mocked title", "body": "Another mocked body" }
+    ] # do jsona przypisujemy liste słowników z wartościami
+    mock_response.ok = True # ustawiamy response.ok jako True
+    mock_response.status = 200 # ustawiwamy response.status jako 200
+
+    # podmieniamy page.request.get na nasz zmockowany obiekt
+    page.request.get = MagicMock(return_value=mock_response)
+
+    response = page.request.get('https://jsonplaceholder.typicode.com/posts')
+
+    print(response.json())
+    print(response.status)
+
+    assert response.status == 200
+    assert response.json()[0]['id'] == 1
+    assert response.json()[0]['title'] == 'Mocked title'
+    assert response.json()[0]['body'] == 'Mocked body'
+    assert response.json()[1]['id'] == 2
+    assert response.json()[1]['title'] == 'Another mocked title'
+    assert response.json()[1]['body'] == 'Another mocked body'

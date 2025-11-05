@@ -60,7 +60,7 @@ def browser_type(request) -> str:
 # przekazuje dane (zależne od opcji --env) z DATABASE_INFO (plik ./data/database_info.json) do konstruktora klasy i tworzy obiekt reprezentujący połączenie z bazą
 # klasa DatabaseConnection znajduje się w pliku ./utils/database_connection.py
 @pytest.fixture
-def database_connection(test_environment):
+def database_connection(test_environment) -> Iterator[DatabaseConnection]:
     db_config: dict = DATABASE_INFO[test_environment]
     db_connection: DatabaseConnection = DatabaseConnection(database_config=db_config)
     yield db_connection

@@ -13,7 +13,7 @@ def user_on_login_page(login_page: LoginPage) -> None:
 
 @when(parsers.parse('I enter "{login}" as login and "{password}" as password and click "Login"'))
 def sign_in(login_page: LoginPage, login: str, password: str) -> None:
-    login_page.sign_in(login, login)
+    login_page.sign_in(login, password)
 
 @then(parsers.parse('I see "{text}" text'))
 def assert_message(login_page: LoginPage, text: str) -> None:
