@@ -82,6 +82,9 @@ def test_04(login_page: LoginPage, home_page: HomePage, test_case: dict) -> None
         case 'invalid_password': # dla złego hasła oczekuj widocznego elementu o tekście "Your password is invalid!"
             expect(login_page.page.get_by_text(text='Your password is invalid!', exact=True)).to_be_visible()
 
+    expect(login_page.page.get_by_text(text=test_case.get('login_msg'), exact=True)).to_be_visible()
+    # nie trzeba stosować match-case jeżeli coś niezbędnego do asercji jest zawarte w danych
+    # każdy przypadek otrzyma odpowiednią wartość tekstu widocznego po wybraniu zaloguj - inny dla złego usera, złego hasła i pomyślnego logowania
 
 def test_05(logged_in_user: HomePage) -> None: # wykorzystanie fixture logged_in_user, który od razu zaloguje użytkownika i zwróci instancje klasy HomePage
     expect(logged_in_user.logout_button).to_be_visible() # logged_in_user ma dostęp do pól klasy HomePage (logout_button)
@@ -152,7 +155,7 @@ def test_10(page: Page) -> None:
     #
     # response = page.request.post(  <- dodajemy wiadomość przez API
     #     'https://randomowastrona.com/api/wiadomosci',
-    #     headers={"Content-Type": "application/json"},
+    #     headers={ "Content-Type": "application/json" },
     #     data={ "message_id": {id_wiadomości}, "title": "jakiś tytuł", "message_text": "super ważna wiadomość wow" }
     # )
     # expect(response).to_be_ok()
@@ -186,6 +189,7 @@ def test_11(page: Page) -> None:
     assert response.json()[0]['id'] == 1
     assert response.json()[0]['title'] == 'Mocked title'
     assert response.json()[0]['body'] == 'Mocked body'
+
     assert response.json()[1]['id'] == 2
     assert response.json()[1]['title'] == 'Another mocked title'
     assert response.json()[1]['body'] == 'Another mocked body'

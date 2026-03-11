@@ -3,17 +3,20 @@
     {
       "username": "practice",
       "password": "SuperSecretPassword!",
-      "test_case_name": "valid_login"
+      "test_case_name": "valid_login",
+      "login_msg" : "You logged into a secure area!"
     },
     {
       "username": "lmao",
       "password": "SuperSecretPassword!",
-      "test_case_name": "invalid_username"
+      "test_case_name": "invalid_username",
+      "login_msg" : "Your username is invalid!"
     },
     {
       "username": "practice",
       "password": "!QAZxsw2",
-      "test_case_name": "invalid_password"
+      "test_case_name": "invalid_password",
+      "login_msg" : "Your password is invalid!"
     }
   ]
 }
